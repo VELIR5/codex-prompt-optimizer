@@ -71,13 +71,13 @@ function Optimize($text) {
 }
 $form = New-Object Windows.Forms.Form
 $form.FormBorderStyle = 'None'; $form.ShowInTaskbar = $false; $form.TopMost = $true; $form.Text = 'Prompt Lens'
-$form.StartPosition = 'Manual'; $form.Size = New-Object Drawing.Size(28,28); $form.BackColor = [Drawing.Color]::FromArgb(36,36,36)
+$form.StartPosition = 'Manual'; $form.Size = New-Object Drawing.Size(32,32); $form.BackColor = [Drawing.Color]::FromArgb(42,42,42); $form.Region = New-Object Drawing.Region([Drawing.Rectangle]::new(0,0,32,32))
 $form.Opacity = 0.96
 $button = New-Object Windows.Forms.Button
 $button.Dock = 'Fill'; $button.FlatStyle = 'Flat'; $button.FlatAppearance.BorderSize = 0; $button.TabStop = $false
 $button.BackColor = [Drawing.Color]::FromArgb(36,36,36); $button.ForeColor = [Drawing.Color]::FromArgb(235,215,125)
 $button.Font = New-Object Drawing.Font('Segoe UI',12,[Drawing.FontStyle]::Bold); $button.Text = ''; $button.AccessibleName = 'Optimize prompt'; $button.Cursor = [Windows.Forms.Cursors]::Hand
-$button.Add_Paint({ param($sender,$event); $g=$event.Graphics; $g.SmoothingMode=[Drawing.Drawing2D.SmoothingMode]::AntiAlias; $brush=New-Object Drawing.SolidBrush($sender.ForeColor); $points=@([Drawing.Point]::new(14,2),[Drawing.Point]::new(16,11),[Drawing.Point]::new(25,14),[Drawing.Point]::new(16,17),[Drawing.Point]::new(14,26),[Drawing.Point]::new(12,17),[Drawing.Point]::new(3,14),[Drawing.Point]::new(12,11)); $g.FillPolygon($brush,$points); $brush.Dispose() })
+$button.Add_Paint({ param($sender,$event); $g=$event.Graphics; $g.SmoothingMode=[Drawing.Drawing2D.SmoothingMode]::AntiAlias; $colors=@([Drawing.Color]::FromArgb(65,145,255),[Drawing.Color]::FromArgb(80,205,150),[Drawing.Color]::FromArgb(245,190,70),[Drawing.Color]::FromArgb(220,80,120)); $triangles=@(@([Drawing.Point]::new(16,3),[Drawing.Point]::new(16,15),[Drawing.Point]::new(5,15)),@([Drawing.Point]::new(16,3),[Drawing.Point]::new(27,15),[Drawing.Point]::new(16,15)),@([Drawing.Point]::new(5,17),[Drawing.Point]::new(16,17),[Drawing.Point]::new(16,29)),@([Drawing.Point]::new(16,17),[Drawing.Point]::new(27,17),[Drawing.Point]::new(16,29))); for($i=0;$i -lt 4;$i++){ $b=New-Object Drawing.SolidBrush($colors[$i]); $g.FillPolygon($b,$triangles[$i]); $b.Dispose() } })
 $form.Controls.Add($button)
 $button.Add_Click({
   if ($script:targetWindow -eq [IntPtr]::Zero) { return }
