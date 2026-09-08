@@ -1,0 +1,10 @@
+{
+  "name": "codex-prompt-optimizer",
+  "version": "0.1.0",
+  "private": false,
+  "description": "One-click prompt optimization for Codex input surfaces.",
+  "type": "module",
+  "scripts": { "test": "node --test", "format:check": "node scripts/check-format.mjs" },
+  "license": "MIT",
+  "engines": { "node": ">=20" }
+}

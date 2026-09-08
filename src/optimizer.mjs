@@ -1,0 +1,22 @@
+export const TEMPLATES = {
+  task: { label: '任务指令', en: 'Task instruction', prompt: 'Clarify the goal, constraints, acceptance criteria, deliverables, and open questions.' },
+  coding: { label: '代码实现', en: 'Code implementation', prompt: 'Add relevant context, expected behavior, edge cases, test strategy, and implementation boundaries.' },
+  review: { label: '代码审查', en: 'Code review', prompt: 'Prioritize correctness, regressions, security, and missing tests. Report findings by severity with file and line references.' },
+  writing: { label: '写作润色', en: 'Writing polish', prompt: 'Preserve intent and facts while improving structure, clarity, tone, and audience fit.' }
+};
+
+const trim = (value) => value.trim().replace(/[ \t]+/g, ' ');
+
+export function optimizePrompt(input, template = 'task', options = {}) {
+  const source = trim(input ?? '');
+  if (!source) return '';
+  const selected = TEMPLATES[template] ?? TEMPLATES.task;
+  const language = options.language === 'en' ? 'en' : 'zh';
+  const prefix = language === 'en'
+    ? `You are an expert assistant. ${selected.prompt}`
+    : `你是一名专业助手。${selected.prompt}`;
+  const structure = language === 'en'
+    ? '\n\nReturn a practical answer. State assumptions briefly, keep scope bounded, and ask only essential clarifying questions.\n\nUser request:\n'
+    : '\n\n请给出可执行的结果，简要说明关键假设，控制范围，并只提出必要的澄清问题。\n\n用户需求：\n';
+  return `${prefix}${structure}${source}`;
+}

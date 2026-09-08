@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Prompt Lens</title><link rel="stylesheet" href="panel.css"></head>
+<body>
+  <main class="shell">
+    <header><div class="brand"><span class="mark">✦</span><div><strong>Prompt Lens</strong><small>Codex prompt optimizer</small></div></div><button id="settings" class="icon" title="设置">⚙</button></header>
+    <section class="intro"><span class="eyebrow">ONE-CLICK CLARITY</span><h1>让每一次输入<br><em>更接近正确答案</em></h1><p>在发送前，把自然语言变成结构清晰、可执行的 Codex 指令。</p></section>
+    <section class="workspace">
+      <div class="toolbar"><label for="template">优化模板</label><select id="template"><option value="task">任务指令</option><option value="coding">代码实现</option><option value="review">代码审查</option><option value="writing">写作润色</option></select><button id="lang" class="ghost">中 / EN</button></div>
+      <textarea id="input" placeholder="例如：帮我修复登录 bug，最好加上测试…"></textarea>
+      <div class="actions"><span id="count">0 字符</span><button id="optimize" class="primary">✦ 立即优化 <kbd>Ctrl ↵</kbd></button></div>
+    </section>
+    <section id="result" class="result hidden"><div class="result-head"><div><span class="eyebrow">OPTIMIZED PROMPT</span><h2>可以发送了</h2></div><button id="restore" class="ghost">↶ 恢复原文</button></div><pre id="output"></pre><button id="copy" class="copy">复制优化结果</button></section>
+    <footer><span>本地处理 · 不上传你的内容</span><span>Prompt Lens v0.1</span></footer>
+  </main><script type="module" src="panel.mjs"></script>
+</body></html>
