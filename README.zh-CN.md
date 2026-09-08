@@ -37,7 +37,7 @@ npm run dev
 
 启动 companion 后，只要 Codex Desktop 窗口打开，窗口右下角发送区域附近就会显示绿色「✦ 优化」悬浮按钮；点击它即可完成同样操作，再点击一次恢复原文。按钮不要求 Codex 始终是当前前台窗口。
 
-优化完全在本机执行，不上传输入内容；快捷键只对 Codex Desktop 的 `ChatGPT` 窗口（以及 CLI 的 `codex` 窗口）生效，其他应用不会被修改。停止开机启动：`npm run companion:uninstall`。首次使用建议先按下面的故障排查检查状态，再切换到 Codex。
+优化完全在本机执行，不上传输入内容；快捷键只对 Codex Desktop 的 `ChatGPT` 窗口（以及 CLI 的 `codex` 窗口）生效，其他应用不会被修改。首次使用建议先按下面的故障排查检查状态，再切换到 Codex。
 
 ### 自定义模板
 
@@ -48,7 +48,6 @@ npm run dev
 - 没有反应：确认 Codex 是当前前台窗口，且没有重复运行两个 companion 实例。
 - 提示快捷键被占用：关闭占用 `Ctrl+Alt+O` 或 `Ctrl+Alt+Z` 的工具后重新启动 companion。
 - 需要立即停止：任务管理器中结束命令行包含 `windows-companion.ps1` 的 `powershell.exe`。
-- 卸载：运行 `npm run companion:uninstall`，再手动结束仍在运行的 companion 进程。
 
 ## 路线图
 

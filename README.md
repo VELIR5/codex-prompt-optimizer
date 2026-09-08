@@ -26,7 +26,7 @@ Open `http://127.0.0.1:4173` in a browser, or mount `src/` as a local Codex pane
 
 ## One-click Codex Desktop workflow (Windows)
 
-This companion does not modify Codex files. Install Node.js 20+, run `npm install`, then run `npm run companion:install` in PowerShell. The launcher uses the STA mode required by Windows Forms. Focus the Codex composer and press `Ctrl+Alt+O` to select, optimize, and paste the prompt back. Press `Ctrl+Alt+Z` to restore the previous text. Hotkeys are guarded to Codex Desktop's `ChatGPT` process (and the CLI `codex` process); other apps are not changed. Stop auto-start with `npm run companion:uninstall`. Processing is local-only.
+This companion does not modify Codex files. Install Node.js 20+, run `npm install`, then run `npm run companion:install` in PowerShell. The launcher uses the STA mode required by Windows Forms. Focus the Codex composer and press `Ctrl+Alt+O` to select, optimize, and paste the prompt back. Press `Ctrl+Alt+Z` to restore the previous text. Hotkeys are guarded to Codex Desktop's `ChatGPT` process (and the CLI `codex` process); other apps are not changed. Processing is local-only.
 
 When the companion is running and Codex Desktop is open, a green **✦ Optimize** floating button appears near the lower-right of the Codex window. Click it to optimize; click it again to restore. It does not require Codex to remain the foreground window.
 
@@ -39,7 +39,6 @@ Yes. Run `npm run companion:configure` to open `%APPDATA%\PromptLens\templates.j
 - No response: make sure Codex is the foreground window and only one companion instance is running.
 - Hotkey conflict: close the application that owns `Ctrl+Alt+O` or `Ctrl+Alt+Z`, then restart the companion.
 - Stop immediately: end the companion `powershell.exe` process in Task Manager.
-- Uninstall: run `npm run companion:uninstall`, then stop any already-running companion process.
 
 ## Included in this release
 
