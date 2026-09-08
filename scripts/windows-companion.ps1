@@ -55,6 +55,8 @@ public static class PromptLensHotkeys {
  [DllImport("user32.dll")] public static extern bool PeekMessage(out MSG msg, IntPtr hWnd, uint min, uint max, uint remove);
  [DllImport("user32.dll")] public static extern IntPtr GetForegroundWindow();
  [DllImport("user32.dll")] public static extern bool SetForegroundWindow(IntPtr hWnd);
+ [DllImport("user32.dll")] public static extern bool SetCursorPos(int x, int y);
+ [DllImport("user32.dll")] public static extern void mouse_event(uint flags, uint dx, uint dy, uint data, UIntPtr extra);
  [DllImport("user32.dll")] public static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint processId);
  [DllImport("user32.dll")] public static extern bool GetWindowRect(IntPtr hWnd, out RECT rect);
  public struct MSG { public IntPtr hWnd; public uint message; public UIntPtr wParam; public IntPtr lParam; public uint time; public int x; public int y; }
@@ -70,6 +72,12 @@ function Test-CodexForeground {
   try { return ((Get-Process -Id $processId -ErrorAction Stop).ProcessName -match '^(ChatGPT|codex|OpenAI\.Codex)$') } catch { return $false }
 }
 function Set-Text($text, $restoreClipboard) { Set-Clipboard -Value $text; [System.Windows.Forms.SendKeys]::SendWait('^v'); Start-Sleep -Milliseconds 120; if ($null -ne $restoreClipboard) { Set-Clipboard -Value $restoreClipboard } }
+function Focus-CodexInput {
+  if ($script:targetWindow -eq [IntPtr]::Zero) { return }
+  $rect = New-Object PromptLensHotkeys+RECT; [PromptLensHotkeys]::GetWindowRect($script:targetWindow, [ref]$rect) | Out-Null
+  $x = [Math]::Max($rect.Left + 250, $rect.Right - 720); $y = $rect.Bottom - 135
+  [PromptLensHotkeys]::SetCursorPos($x, $y) | Out-Null; [PromptLensHotkeys]::mouse_event(0x0002,0,0,0,[UIntPtr]::Zero); [PromptLensHotkeys]::mouse_event(0x0004,0,0,0,[UIntPtr]::Zero); Start-Sleep -Milliseconds 120
+}
 function Optimize($text) {
   $clean = ($text -replace '[ \t]+',' ').Trim()
   if (!$clean) { return $clean }
@@ -90,7 +98,7 @@ $form.Controls.Add($button)
 $button.Add_Click({
   if ($script:targetWindow -eq [IntPtr]::Zero) { return }
   [PromptLensHotkeys]::SetForegroundWindow($script:targetWindow) | Out-Null
-  Start-Sleep -Milliseconds 120
+  Start-Sleep -Milliseconds 120; Focus-CodexInput
   if ($script:previous) { $clipboardBefore = Get-Clipboard -Raw -ErrorAction SilentlyContinue; Set-Text $script:previous $clipboardBefore; $script:previous = ''; $button.AccessibleName = 'Optimize prompt'; $button.Invalidate(); return }
   $clipboardBefore = Get-Clipboard -Raw -ErrorAction SilentlyContinue
   [System.Windows.Forms.SendKeys]::SendWait('^a'); Start-Sleep -Milliseconds 80; [System.Windows.Forms.SendKeys]::SendWait('^c'); Start-Sleep -Milliseconds 120
