@@ -37,7 +37,7 @@ npm run dev
 
 启动 companion 后，Codex 窗口右下角会显示绿色「✦ 优化」悬浮按钮；点击它即可完成同样操作，再点击一次恢复原文。按钮只在 Codex 成为前台窗口时显示。
 
-优化完全在本机执行，不上传输入内容；快捷键只对前台进程名为 `codex` 的窗口生效，其他应用不会被修改。停止开机启动：`npm run companion:uninstall`。首次使用建议先按下面的故障排查检查状态，再切换到 Codex。
+优化完全在本机执行，不上传输入内容；快捷键只对 Codex Desktop 的 `ChatGPT` 窗口（以及 CLI 的 `codex` 窗口）生效，其他应用不会被修改。停止开机启动：`npm run companion:uninstall`。首次使用建议先按下面的故障排查检查状态，再切换到 Codex。
 
 ### 自定义模板
 

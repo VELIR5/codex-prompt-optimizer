@@ -44,7 +44,7 @@ using System.Runtime.InteropServices;
 public static class PromptLensHotkeys {
  [DllImport("user32.dll")] public static extern bool RegisterHotKey(IntPtr hWnd, int id, uint fsModifiers, uint vk);
  [DllImport("user32.dll")] public static extern bool UnregisterHotKey(IntPtr hWnd, int id);
- [DllImport("user32.dll")] public static extern int GetMessage(out MSG msg, IntPtr hWnd, uint min, uint max);
+ [DllImport("user32.dll")] public static extern bool PeekMessage(out MSG msg, IntPtr hWnd, uint min, uint max, uint remove);
  [DllImport("user32.dll")] public static extern IntPtr GetForegroundWindow();
  [DllImport("user32.dll")] public static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint processId);
  [DllImport("user32.dll")] public static extern bool GetWindowRect(IntPtr hWnd, out RECT rect);
@@ -57,7 +57,7 @@ $previous = ''
 function Test-CodexForeground {
   $window = [PromptLensHotkeys]::GetForegroundWindow(); if ($window -eq [IntPtr]::Zero) { return $false }
   [uint32]$processId = 0; [PromptLensHotkeys]::GetWindowThreadProcessId($window, [ref]$processId) | Out-Null
-  try { return ((Get-Process -Id $processId -ErrorAction Stop).ProcessName -match '^(codex|OpenAI\.Codex)$') } catch { return $false }
+  try { return ((Get-Process -Id $processId -ErrorAction Stop).ProcessName -match '^(ChatGPT|codex|OpenAI\.Codex)$') } catch { return $false }
 }
 function Set-Text($text, $restoreClipboard) { Set-Clipboard -Value $text; [System.Windows.Forms.SendKeys]::SendWait('^v'); Start-Sleep -Milliseconds 120; if ($null -ne $restoreClipboard) { Set-Clipboard -Value $restoreClipboard } }
 function Optimize($text) {
@@ -68,7 +68,7 @@ function Optimize($text) {
   return "You are an expert assistant. $instruction`r`n`r`nReturn a practical answer, state assumptions briefly, keep scope bounded, and ask only essential clarifying questions.`r`n`r`nUser request:`r`n$clean"
 }
 $form = New-Object Windows.Forms.Form
-$form.FormBorderStyle = 'None'; $form.ShowInTaskbar = $false; $form.TopMost = $true
+$form.FormBorderStyle = 'None'; $form.ShowInTaskbar = $false; $form.TopMost = $true; $form.Text = 'Prompt Lens'
 $form.StartPosition = 'Manual'; $form.Size = New-Object Drawing.Size(112,34); $form.BackColor = [Drawing.Color]::FromArgb(18,60,53)
 $form.Opacity = 0.98
 $button = New-Object Windows.Forms.Button
@@ -90,7 +90,7 @@ $timer.Add_Tick({
   if ($window -eq [IntPtr]::Zero) { $form.Hide(); return }
   [uint32]$processId = 0; [PromptLensHotkeys]::GetWindowThreadProcessId($window, [ref]$processId) | Out-Null
   try { $name = (Get-Process -Id $processId -ErrorAction Stop).ProcessName } catch { $name = '' }
-  if ($name -match '^(codex|OpenAI\.Codex)$') { $rect = New-Object PromptLensHotkeys+RECT; [PromptLensHotkeys]::GetWindowRect($window, [ref]$rect) | Out-Null; $form.Location = New-Object Drawing.Point(($rect.Right - 125),($rect.Bottom - 80)); $form.Show() } else { $form.Hide() }
+  if ($name -match '^(ChatGPT|codex|OpenAI\.Codex)$') { $rect = New-Object PromptLensHotkeys+RECT; [PromptLensHotkeys]::GetWindowRect($window, [ref]$rect) | Out-Null; $form.Location = New-Object Drawing.Point(($rect.Right - 260),($rect.Bottom - 105)); $form.Show() } else { $form.Hide() }
 })
 $timer.Start()
 $hotkeyOptimize = [PromptLensHotkeys]::RegisterHotKey([IntPtr]::Zero, 1, $MOD_CONTROL -bor $MOD_ALT, 0x4F)
@@ -101,7 +101,7 @@ try {
   $form.Show()
   while ($true) {
     $message = New-Object PromptLensHotkeys+MSG
-    if ([PromptLensHotkeys]::GetMessage([ref]$message, [IntPtr]::Zero, 0, 0) -gt 0) {
+    if ([PromptLensHotkeys]::PeekMessage([ref]$message, [IntPtr]::Zero, 0, 0, 1)) {
       if ($message.message -eq 0x0312) {
         if (!(Test-CodexForeground)) { continue }
         $clipboardBefore = Get-Clipboard -Raw -ErrorAction SilentlyContinue
