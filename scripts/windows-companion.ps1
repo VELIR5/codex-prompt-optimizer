@@ -69,27 +69,27 @@ function Optimize($text) {
 }
 $form = New-Object Windows.Forms.Form
 $form.FormBorderStyle = 'None'; $form.ShowInTaskbar = $false; $form.TopMost = $true; $form.Text = 'Prompt Lens'
-$form.StartPosition = 'Manual'; $form.Size = New-Object Drawing.Size(36,36); $form.BackColor = [Drawing.Color]::FromArgb(18,60,53)
-$form.Opacity = 0.98
+$form.StartPosition = 'Manual'; $form.Size = New-Object Drawing.Size(28,28); $form.BackColor = [Drawing.Color]::Fuchsia; $form.TransparencyKey = [Drawing.Color]::Fuchsia
+$form.Opacity = 0.96
 $button = New-Object Windows.Forms.Button
-$button.Dock = 'Fill'; $button.FlatStyle = 'Flat'; $button.FlatAppearance.BorderSize = 0
-$button.BackColor = [Drawing.Color]::FromArgb(18,60,53); $button.ForeColor = [Drawing.Color]::FromArgb(230,255,173)
+$button.Dock = 'Fill'; $button.FlatStyle = 'Flat'; $button.FlatAppearance.BorderSize = 0; $button.TabStop = $false
+$button.BackColor = [Drawing.Color]::Fuchsia; $button.ForeColor = [Drawing.Color]::FromArgb(235,215,125)
 $button.Font = New-Object Drawing.Font('Segoe UI',12,[Drawing.FontStyle]::Bold); $button.Text = ''; $button.AccessibleName = 'Optimize prompt'; $button.Cursor = [Windows.Forms.Cursors]::Hand
-$button.Add_Paint({ param($sender,$event); $g=$event.Graphics; $g.SmoothingMode=[Drawing.Drawing2D.SmoothingMode]::AntiAlias; $brush=New-Object Drawing.SolidBrush($sender.ForeColor); $points=@([Drawing.Point]::new(18,5),[Drawing.Point]::new(21,14),[Drawing.Point]::new(30,18),[Drawing.Point]::new(21,21),[Drawing.Point]::new(18,31),[Drawing.Point]::new(15,21),[Drawing.Point]::new(6,18),[Drawing.Point]::new(15,14)); $g.FillPolygon($brush,$points); $brush.Dispose() })
+$button.Add_Paint({ param($sender,$event); $g=$event.Graphics; $g.SmoothingMode=[Drawing.Drawing2D.SmoothingMode]::AntiAlias; $brush=New-Object Drawing.SolidBrush($sender.ForeColor); $points=@([Drawing.Point]::new(14,2),[Drawing.Point]::new(16,11),[Drawing.Point]::new(25,14),[Drawing.Point]::new(16,17),[Drawing.Point]::new(14,26),[Drawing.Point]::new(12,17),[Drawing.Point]::new(3,14),[Drawing.Point]::new(12,11)); $g.FillPolygon($brush,$points); $brush.Dispose() })
 $form.Controls.Add($button)
 $button.Add_Click({
   if (!(Test-CodexForeground)) { return }
-  if ($script:previous) { $clipboardBefore = Get-Clipboard -Raw -ErrorAction SilentlyContinue; Set-Text $script:previous $clipboardBefore; $script:previous = ''; $button.AccessibleName = 'Optimize prompt'; $button.BackColor = [Drawing.Color]::FromArgb(18,60,53); $button.Invalidate(); return }
+  if ($script:previous) { $clipboardBefore = Get-Clipboard -Raw -ErrorAction SilentlyContinue; Set-Text $script:previous $clipboardBefore; $script:previous = ''; $button.AccessibleName = 'Optimize prompt'; $button.Invalidate(); return }
   $clipboardBefore = Get-Clipboard -Raw -ErrorAction SilentlyContinue
   [System.Windows.Forms.SendKeys]::SendWait('^a'); Start-Sleep -Milliseconds 80; [System.Windows.Forms.SendKeys]::SendWait('^c'); Start-Sleep -Milliseconds 120
   $text = Get-Clipboard -Raw
-  if ($text.Trim()) { $script:previous = $text; Set-Text (Optimize $text) $clipboardBefore; $button.AccessibleName = 'Restore prompt'; $button.BackColor = [Drawing.Color]::FromArgb(50,75,67); $button.Invalidate() }
+  if ($text.Trim()) { $script:previous = $text; Set-Text (Optimize $text) $clipboardBefore; $button.AccessibleName = 'Restore prompt'; $button.Invalidate() }
 })
 $timer = New-Object Windows.Forms.Timer; $timer.Interval = 350
 $timer.Add_Tick({
   $target = Get-Process ChatGPT -ErrorAction SilentlyContinue | Where-Object { $_.MainWindowHandle -ne [IntPtr]::Zero } | Select-Object -First 1
   if (!$target) { $target = Get-Process codex -ErrorAction SilentlyContinue | Where-Object { $_.MainWindowHandle -ne [IntPtr]::Zero } | Select-Object -First 1 }
-  if ($target) { $rect = New-Object PromptLensHotkeys+RECT; [PromptLensHotkeys]::GetWindowRect($target.MainWindowHandle, [ref]$rect) | Out-Null; $form.Location = New-Object Drawing.Point(($rect.Right - 260),($rect.Bottom - 105)); $form.Show() } else { $form.Hide() }
+  if ($target) { $rect = New-Object PromptLensHotkeys+RECT; [PromptLensHotkeys]::GetWindowRect($target.MainWindowHandle, [ref]$rect) | Out-Null; $form.Location = New-Object Drawing.Point(($rect.Right - 112),($rect.Bottom - 86)); $form.Show() } else { $form.Hide() }
 })
 $timer.Start()
 $hotkeyOptimize = [PromptLensHotkeys]::RegisterHotKey([IntPtr]::Zero, 1, $MOD_CONTROL -bor $MOD_ALT, 0x4F)
