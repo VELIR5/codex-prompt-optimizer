@@ -74,15 +74,16 @@ $form.Opacity = 0.98
 $button = New-Object Windows.Forms.Button
 $button.Dock = 'Fill'; $button.FlatStyle = 'Flat'; $button.FlatAppearance.BorderSize = 0
 $button.BackColor = [Drawing.Color]::FromArgb(18,60,53); $button.ForeColor = [Drawing.Color]::FromArgb(230,255,173)
-$button.Font = New-Object Drawing.Font('Segoe UI',12,[Drawing.FontStyle]::Bold); $button.Text = '*'; $button.AccessibleName = 'Optimize prompt'
+$button.Font = New-Object Drawing.Font('Segoe UI',12,[Drawing.FontStyle]::Bold); $button.Text = ''; $button.AccessibleName = 'Optimize prompt'; $button.Cursor = [Windows.Forms.Cursors]::Hand
+$button.Add_Paint({ param($sender,$event); $g=$event.Graphics; $g.SmoothingMode=[Drawing.Drawing2D.SmoothingMode]::AntiAlias; $brush=New-Object Drawing.SolidBrush($sender.ForeColor); $points=@([Drawing.Point]::new(18,5),[Drawing.Point]::new(21,14),[Drawing.Point]::new(30,18),[Drawing.Point]::new(21,21),[Drawing.Point]::new(18,31),[Drawing.Point]::new(15,21),[Drawing.Point]::new(6,18),[Drawing.Point]::new(15,14)); $g.FillPolygon($brush,$points); $brush.Dispose() })
 $form.Controls.Add($button)
 $button.Add_Click({
   if (!(Test-CodexForeground)) { return }
-  if ($script:previous) { $clipboardBefore = Get-Clipboard -Raw -ErrorAction SilentlyContinue; Set-Text $script:previous $clipboardBefore; $script:previous = ''; $button.Text = '*'; $button.AccessibleName = 'Optimize prompt'; $button.BackColor = [Drawing.Color]::FromArgb(18,60,53); return }
+  if ($script:previous) { $clipboardBefore = Get-Clipboard -Raw -ErrorAction SilentlyContinue; Set-Text $script:previous $clipboardBefore; $script:previous = ''; $button.AccessibleName = 'Optimize prompt'; $button.BackColor = [Drawing.Color]::FromArgb(18,60,53); $button.Invalidate(); return }
   $clipboardBefore = Get-Clipboard -Raw -ErrorAction SilentlyContinue
   [System.Windows.Forms.SendKeys]::SendWait('^a'); Start-Sleep -Milliseconds 80; [System.Windows.Forms.SendKeys]::SendWait('^c'); Start-Sleep -Milliseconds 120
   $text = Get-Clipboard -Raw
-  if ($text.Trim()) { $script:previous = $text; Set-Text (Optimize $text) $clipboardBefore; $button.Text = '<'; $button.AccessibleName = 'Restore prompt'; $button.BackColor = [Drawing.Color]::FromArgb(50,75,67) }
+  if ($text.Trim()) { $script:previous = $text; Set-Text (Optimize $text) $clipboardBefore; $button.AccessibleName = 'Restore prompt'; $button.BackColor = [Drawing.Color]::FromArgb(50,75,67); $button.Invalidate() }
 })
 $timer = New-Object Windows.Forms.Timer; $timer.Interval = 350
 $timer.Add_Tick({
