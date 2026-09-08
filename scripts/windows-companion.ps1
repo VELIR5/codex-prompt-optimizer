@@ -3,6 +3,7 @@ $ErrorActionPreference = 'Stop'
 $app = Split-Path -Parent $PSScriptRoot
 $startup = [Environment]::GetFolderPath('Startup')
 $launcher = Join-Path $startup 'Prompt Lens.lnk'
+$taskName = 'PromptLens Companion'
 $configDir = Join-Path $env:APPDATA 'PromptLens'
 $configPath = Join-Path $configDir 'templates.json'
 function Initialize-Config {
@@ -24,7 +25,7 @@ function Initialize-Config {
 }
 Initialize-Config
 if ($Configure) { Start-Process notepad.exe $configPath; exit 0 }
-if ($Uninstall) { if (Test-Path $launcher) { Remove-Item -LiteralPath $launcher -Force }; Write-Host 'Prompt Lens startup entry removed.'; exit 0 }
+if ($Uninstall) { if (Test-Path $launcher) { Remove-Item -LiteralPath $launcher -Force }; schtasks.exe /Delete /TN $taskName /F 2>$null | Out-Null; Write-Host 'Prompt Lens startup entry removed.'; exit 0 }
 if ($Install) {
   $shell = New-Object -ComObject WScript.Shell
   $shortcut = $shell.CreateShortcut($launcher)
@@ -33,6 +34,8 @@ if ($Install) {
   $shortcut.WorkingDirectory = $app
   $shortcut.WindowStyle = 7
   $shortcut.Save()
+  $taskCommand = "`"$env:SystemRoot\System32\WindowsPowerShell\v1.0\powershell.exe`" -NoProfile -STA -ExecutionPolicy Bypass -WindowStyle Hidden -File `"$PSScriptRoot\windows-companion.ps1`""
+  schtasks.exe /Create /TN $taskName /TR $taskCommand /SC ONLOGON /DELAY 0000:20 /F | Out-Null
   Write-Host "Installed. Start Prompt Lens from: $launcher"
   exit 0
 }
