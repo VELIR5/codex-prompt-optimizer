@@ -4,7 +4,7 @@
   "private": false,
   "description": "One-click prompt optimization for Codex input surfaces.",
   "type": "module",
-  "scripts": { "test": "node --test", "format:check": "node scripts/check-format.mjs", "dev": "node scripts/serve.mjs", "companion:install": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/windows-companion.ps1 -Install", "companion:configure": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/windows-companion.ps1 -Configure", "companion:uninstall": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/windows-companion.ps1 -Uninstall" },
+  "scripts": { "test": "node --test", "format:check": "node scripts/check-format.mjs", "dev": "node scripts/serve.mjs", "companion:install": "powershell -NoProfile -STA -ExecutionPolicy Bypass -File scripts/windows-companion.ps1 -Install", "companion:configure": "powershell -NoProfile -STA -ExecutionPolicy Bypass -File scripts/windows-companion.ps1 -Configure", "companion:uninstall": "powershell -NoProfile -STA -ExecutionPolicy Bypass -File scripts/windows-companion.ps1 -Uninstall" },
   "license": "MIT",
   "engines": { "node": ">=20" }
 }

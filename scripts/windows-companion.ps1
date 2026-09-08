@@ -29,7 +29,7 @@ if ($Install) {
   $shell = New-Object -ComObject WScript.Shell
   $shortcut = $shell.CreateShortcut($launcher)
   $shortcut.TargetPath = "$env:SystemRoot\System32\WindowsPowerShell\v1.0\powershell.exe"
-  $shortcut.Arguments = "-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File `"$PSScriptRoot\windows-companion.ps1`""
+  $shortcut.Arguments = "-NoProfile -STA -ExecutionPolicy Bypass -WindowStyle Hidden -File `"$PSScriptRoot\windows-companion.ps1`""
   $shortcut.WorkingDirectory = $app
   $shortcut.WindowStyle = 7
   $shortcut.Save()

@@ -29,7 +29,7 @@ npm run dev
 这是 Windows 桌面 companion，不修改 Codex 安装文件：
 
 1. 安装 Node.js 20+，打开 PowerShell（不是在 Codex 输入框中执行）。
-2. 执行 `npm install`（本项目无第三方依赖）。
+2. 执行 `npm install`（本项目无第三方依赖；启动项会以最小化窗口运行 Windows Forms 所需的 STA 模式）。
 3. 执行 `npm run companion:install`，注册开机启动。
 4. 重新打开 Codex，把光标放在输入框并输入提示词。
 5. 按 `Ctrl+Alt+O`：自动选中输入框内容、优化并写回。
