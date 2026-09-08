@@ -46,6 +46,7 @@ public static class PromptLensHotkeys {
  [DllImport("user32.dll")] public static extern bool UnregisterHotKey(IntPtr hWnd, int id);
  [DllImport("user32.dll")] public static extern bool PeekMessage(out MSG msg, IntPtr hWnd, uint min, uint max, uint remove);
  [DllImport("user32.dll")] public static extern IntPtr GetForegroundWindow();
+ [DllImport("user32.dll")] public static extern bool SetForegroundWindow(IntPtr hWnd);
  [DllImport("user32.dll")] public static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint processId);
  [DllImport("user32.dll")] public static extern bool GetWindowRect(IntPtr hWnd, out RECT rect);
  public struct MSG { public IntPtr hWnd; public uint message; public UIntPtr wParam; public IntPtr lParam; public uint time; public int x; public int y; }
@@ -54,6 +55,7 @@ public static class PromptLensHotkeys {
 '@
 $MOD_CONTROL = 0x0002; $MOD_ALT = 0x0001
 $previous = ''
+$script:targetWindow = [IntPtr]::Zero
 function Test-CodexForeground {
   $window = [PromptLensHotkeys]::GetForegroundWindow(); if ($window -eq [IntPtr]::Zero) { return $false }
   [uint32]$processId = 0; [PromptLensHotkeys]::GetWindowThreadProcessId($window, [ref]$processId) | Out-Null
@@ -69,16 +71,18 @@ function Optimize($text) {
 }
 $form = New-Object Windows.Forms.Form
 $form.FormBorderStyle = 'None'; $form.ShowInTaskbar = $false; $form.TopMost = $true; $form.Text = 'Prompt Lens'
-$form.StartPosition = 'Manual'; $form.Size = New-Object Drawing.Size(28,28); $form.BackColor = [Drawing.Color]::Fuchsia; $form.TransparencyKey = [Drawing.Color]::Fuchsia
+$form.StartPosition = 'Manual'; $form.Size = New-Object Drawing.Size(28,28); $form.BackColor = [Drawing.Color]::FromArgb(36,36,36)
 $form.Opacity = 0.96
 $button = New-Object Windows.Forms.Button
 $button.Dock = 'Fill'; $button.FlatStyle = 'Flat'; $button.FlatAppearance.BorderSize = 0; $button.TabStop = $false
-$button.BackColor = [Drawing.Color]::Fuchsia; $button.ForeColor = [Drawing.Color]::FromArgb(235,215,125)
+$button.BackColor = [Drawing.Color]::FromArgb(36,36,36); $button.ForeColor = [Drawing.Color]::FromArgb(235,215,125)
 $button.Font = New-Object Drawing.Font('Segoe UI',12,[Drawing.FontStyle]::Bold); $button.Text = ''; $button.AccessibleName = 'Optimize prompt'; $button.Cursor = [Windows.Forms.Cursors]::Hand
 $button.Add_Paint({ param($sender,$event); $g=$event.Graphics; $g.SmoothingMode=[Drawing.Drawing2D.SmoothingMode]::AntiAlias; $brush=New-Object Drawing.SolidBrush($sender.ForeColor); $points=@([Drawing.Point]::new(14,2),[Drawing.Point]::new(16,11),[Drawing.Point]::new(25,14),[Drawing.Point]::new(16,17),[Drawing.Point]::new(14,26),[Drawing.Point]::new(12,17),[Drawing.Point]::new(3,14),[Drawing.Point]::new(12,11)); $g.FillPolygon($brush,$points); $brush.Dispose() })
 $form.Controls.Add($button)
 $button.Add_Click({
-  if (!(Test-CodexForeground)) { return }
+  if ($script:targetWindow -eq [IntPtr]::Zero) { return }
+  [PromptLensHotkeys]::SetForegroundWindow($script:targetWindow) | Out-Null
+  Start-Sleep -Milliseconds 120
   if ($script:previous) { $clipboardBefore = Get-Clipboard -Raw -ErrorAction SilentlyContinue; Set-Text $script:previous $clipboardBefore; $script:previous = ''; $button.AccessibleName = 'Optimize prompt'; $button.Invalidate(); return }
   $clipboardBefore = Get-Clipboard -Raw -ErrorAction SilentlyContinue
   [System.Windows.Forms.SendKeys]::SendWait('^a'); Start-Sleep -Milliseconds 80; [System.Windows.Forms.SendKeys]::SendWait('^c'); Start-Sleep -Milliseconds 120
@@ -89,7 +93,7 @@ $timer = New-Object Windows.Forms.Timer; $timer.Interval = 350
 $timer.Add_Tick({
   $target = Get-Process ChatGPT -ErrorAction SilentlyContinue | Where-Object { $_.MainWindowHandle -ne [IntPtr]::Zero } | Select-Object -First 1
   if (!$target) { $target = Get-Process codex -ErrorAction SilentlyContinue | Where-Object { $_.MainWindowHandle -ne [IntPtr]::Zero } | Select-Object -First 1 }
-  if ($target) { $rect = New-Object PromptLensHotkeys+RECT; [PromptLensHotkeys]::GetWindowRect($target.MainWindowHandle, [ref]$rect) | Out-Null; $form.Location = New-Object Drawing.Point(($rect.Right - 112),($rect.Bottom - 86)); $form.Show() } else { $form.Hide() }
+  if ($target) { $script:targetWindow = $target.MainWindowHandle; $rect = New-Object PromptLensHotkeys+RECT; [PromptLensHotkeys]::GetWindowRect($target.MainWindowHandle, [ref]$rect) | Out-Null; $form.Location = New-Object Drawing.Point(($rect.Right - 112),($rect.Bottom - 86)); $form.Show() } else { $script:targetWindow = [IntPtr]::Zero; $form.Hide() }
 })
 $timer.Start()
 $hotkeyOptimize = [PromptLensHotkeys]::RegisterHotKey([IntPtr]::Zero, 1, $MOD_CONTROL -bor $MOD_ALT, 0x4F)
