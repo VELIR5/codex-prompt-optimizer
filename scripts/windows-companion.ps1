@@ -38,6 +38,14 @@ if ($Install) {
 }
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
+Add-Type -ReferencedAssemblies System.Windows.Forms @'
+using System;
+using System.Windows.Forms;
+public class PromptLensOverlay : Form {
+  protected override bool ShowWithoutActivation { get { return true; } }
+  protected override CreateParams CreateParams { get { var cp=base.CreateParams; cp.ExStyle |= 0x08000000 | 0x00000080; return cp; } }
+}
+'@
 Add-Type @'
 using System;
 using System.Runtime.InteropServices;
@@ -69,7 +77,7 @@ function Optimize($text) {
   catch { throw "Unable to read Prompt Lens templates at $configPath : $_" }
   return "You are an expert assistant. $instruction`r`n`r`nReturn a practical answer, state assumptions briefly, keep scope bounded, and ask only essential clarifying questions.`r`n`r`nUser request:`r`n$clean"
 }
-$form = New-Object Windows.Forms.Form
+$form = New-Object PromptLensOverlay
 $form.FormBorderStyle = 'None'; $form.ShowInTaskbar = $false; $form.TopMost = $true; $form.Text = 'Prompt Lens'
 $form.StartPosition = 'Manual'; $form.Size = New-Object Drawing.Size(32,32); $form.BackColor = [Drawing.Color]::FromArgb(42,42,42); $form.Region = New-Object Drawing.Region([Drawing.Rectangle]::new(0,0,32,32))
 $form.Opacity = 0.96
