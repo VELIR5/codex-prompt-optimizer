@@ -24,9 +24,9 @@ npm run dev
 
 Open `http://127.0.0.1:4173` in a browser, or mount `src/` as a local Codex panel according to your host's extension API. For a Codex-like composer, call `observeComposer({ selector: 'textarea' })` from `src/host-adapter.mjs`; it watches dynamically-rendered inputs and adds an inline optimize button.
 
-## Codex Desktop limitation
+## One-click Codex Desktop workflow (Windows)
 
-This version cannot be installed directly into Codex Desktop or inject a button into its native composer. Codex Desktop does not expose a public UI extension hook for this. The supported workflow is: run `npm run dev`, open `http://127.0.0.1:4173`, optimize, then copy the result into Codex. The host adapter only supports web hosts that explicitly allow DOM extensions.
+This companion does not modify Codex files. With Node.js 20+ installed, run `npm install`, then `npm run companion:install` in PowerShell. Focus the Codex composer and press `Ctrl+Alt+O` to select, optimize, and paste the prompt back. Press `Ctrl+Alt+Z` to restore the previous text. Stop auto-start with `npm run companion:uninstall`. Processing is local-only.
 
 ## Roadmap
 

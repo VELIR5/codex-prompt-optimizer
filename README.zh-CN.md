@@ -24,9 +24,18 @@ npm run dev
 
 访问 `http://127.0.0.1:4173` 即可预览。接入 Codex 时，从 `src/host-adapter.mjs` 调用 `observeComposer({ selector: 'textarea' })`，它会监听动态渲染的输入框并注入行内优化按钮；点击一次优化，再点击即可恢复原文。
 
-## Codex Desktop 当前限制
+## Codex Desktop 一键使用
 
-当前版本不能直接安装到 Codex 桌面版，也不会注入原生输入框按钮。Codex Desktop 目前没有公开的 UI 扩展接口。可用流程是运行 `npm run dev`，打开 `http://127.0.0.1:4173`，完成优化后复制到 Codex；`host-adapter.mjs` 仅支持明确允许 DOM 扩展的网页宿主。
+这是 Windows 桌面 companion，不修改 Codex 安装文件：
+
+1. 在 Codex 输入框中安装 Node.js 20+ 后打开 PowerShell。
+2. 执行 `npm install`（本项目无第三方依赖）。
+3. 执行 `npm run companion:install`，注册开机启动。
+4. 重新打开 Codex，把光标放在输入框并输入提示词。
+5. 按 `Ctrl+Alt+O`：自动选中输入框内容、优化并写回。
+6. 如需恢复，按 `Ctrl+Alt+Z`。
+
+优化完全在本机执行，不上传输入内容。停止开机启动：`npm run companion:uninstall`。首次使用建议先在记事本验证快捷键，再切换到 Codex。
 
 ## 路线图
 
