@@ -34,8 +34,8 @@ if ($Install) {
   $shortcut.WorkingDirectory = $app
   $shortcut.WindowStyle = 7
   $shortcut.Save()
-  $taskCommand = "`"$env:SystemRoot\System32\WindowsPowerShell\v1.0\powershell.exe`" -NoProfile -STA -ExecutionPolicy Bypass -WindowStyle Hidden -File `"$PSScriptRoot\windows-companion.ps1`""
-  schtasks.exe /Create /TN $taskName /TR $taskCommand /SC ONLOGON /DELAY 0000:20 /F | Out-Null
+  $taskCommand = "powershell.exe -NoProfile -STA -ExecutionPolicy Bypass -WindowStyle Hidden -File `"$PSScriptRoot\windows-companion.ps1`""
+  Start-Process schtasks.exe -ArgumentList @('/Create','/TN',$taskName,'/TR',$taskCommand,'/SC','ONLOGON','/DELAY','0000:20','/F') -Wait -WindowStyle Hidden | Out-Null
   Write-Host "Installed. Start Prompt Lens from: $launcher"
   exit 0
 }
