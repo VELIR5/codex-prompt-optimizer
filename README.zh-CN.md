@@ -24,6 +24,10 @@ npm run dev
 
 访问 `http://127.0.0.1:4173` 即可预览。接入 Codex 时，从 `src/host-adapter.mjs` 调用 `observeComposer({ selector: 'textarea' })`，它会监听动态渲染的输入框并注入行内优化按钮；点击一次优化，再点击即可恢复原文。
 
+## Codex Desktop 当前限制
+
+当前版本不能直接安装到 Codex 桌面版，也不会注入原生输入框按钮。Codex Desktop 目前没有公开的 UI 扩展接口。可用流程是运行 `npm run dev`，打开 `http://127.0.0.1:4173`，完成优化后复制到 Codex；`host-adapter.mjs` 仅支持明确允许 DOM 扩展的网页宿主。
+
 ## 路线图
 
 当前版本提供确定性的优化引擎和与宿主无关的面板。后续适配层可以直接绑定 Codex 原生 composer 事件，无需改变优化器接口。
