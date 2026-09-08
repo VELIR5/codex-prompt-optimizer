@@ -35,7 +35,7 @@ npm run dev
 5. 按 `Ctrl+Alt+O`：自动选中输入框内容、优化并写回。
 6. 如需恢复，按 `Ctrl+Alt+Z`。
 
-启动 companion 后，Codex 窗口右下角会显示绿色「✦ 优化」悬浮按钮；点击它即可完成同样操作，再点击一次恢复原文。按钮只在 Codex 成为前台窗口时显示。
+启动 companion 后，只要 Codex Desktop 窗口打开，窗口右下角发送区域附近就会显示绿色「✦ 优化」悬浮按钮；点击它即可完成同样操作，再点击一次恢复原文。按钮不要求 Codex 始终是当前前台窗口。
 
 优化完全在本机执行，不上传输入内容；快捷键只对 Codex Desktop 的 `ChatGPT` 窗口（以及 CLI 的 `codex` 窗口）生效，其他应用不会被修改。停止开机启动：`npm run companion:uninstall`。首次使用建议先按下面的故障排查检查状态，再切换到 Codex。
 
