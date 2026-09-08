@@ -19,9 +19,10 @@ git clone https://github.com/VELIR5/codex-prompt-optimizer.git
 cd codex-prompt-optimizer
 npm test
 npm run format:check
+npm run dev
 ```
 
-直接打开 `src/panel.html` 即可预览；接入 Codex 时，可按照宿主的扩展 API 将 `src/` 挂载为本地面板。
+访问 `http://127.0.0.1:4173` 即可预览。接入 Codex 时，从 `src/host-adapter.mjs` 调用 `observeComposer({ selector: 'textarea' })`，它会监听动态渲染的输入框并注入行内优化按钮；点击一次优化，再点击即可恢复原文。
 
 ## 路线图
 

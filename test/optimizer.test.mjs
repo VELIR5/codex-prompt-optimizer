@@ -2,3 +2,4 @@ import test from 'node:test'; import assert from 'node:assert/strict'; import { 
 test('returns empty for blank input', () => assert.equal(optimizePrompt('  '), ''));
 test('adds task structure and preserves request', () => { const result = optimizePrompt('帮我修 bug', 'coding'); assert.match(result, /帮我修 bug/); assert.match(result, /边界/); });
 test('supports English output', () => assert.match(optimizePrompt('fix login', 'review', { language: 'en' }), /You are an expert assistant/));
+test('does not mutate the source string', () => { const source = '  ship this feature  '; optimizePrompt(source); assert.equal(source, '  ship this feature  '); });

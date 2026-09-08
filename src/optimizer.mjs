@@ -1,5 +1,5 @@
 export const TEMPLATES = {
-  task: { label: '任务指令', en: 'Task instruction', prompt: 'Clarify the goal, constraints, acceptance criteria, deliverables, and open questions.' },
+  task: { label: '任务指令', en: 'Task instruction', prompt: '明确目标、约束、验收标准、交付物和待确认问题。', promptEn: 'Clarify the goal, constraints, acceptance criteria, deliverables, and open questions.' },
   coding: { label: '代码实现', en: 'Code implementation', prompt: '补充相关上下文、预期行为、边界情况、测试策略和实现边界。', promptEn: 'Add relevant context, expected behavior, edge cases, test strategy, and implementation boundaries.' },
   review: { label: '代码审查', en: 'Code review', prompt: '优先关注正确性、回归、安全性和缺失测试，并按严重程度给出文件与行号。', promptEn: 'Prioritize correctness, regressions, security, and missing tests. Report findings by severity with file and line references.' },
   writing: { label: '写作润色', en: 'Writing polish', prompt: '保留原意与事实，同时改善结构、清晰度、语气和读者适配。', promptEn: 'Preserve intent and facts while improving structure, clarity, tone, and audience fit.' }

@@ -19,9 +19,10 @@ git clone https://github.com/VELIR5/codex-prompt-optimizer.git
 cd codex-prompt-optimizer
 npm test
 npm run format:check
+npm run dev
 ```
 
-Open `src/panel.html` in a browser, or mount `src/` as a local Codex panel according to your host's extension API.
+Open `http://127.0.0.1:4173` in a browser, or mount `src/` as a local Codex panel according to your host's extension API. For a Codex-like composer, call `observeComposer({ selector: 'textarea' })` from `src/host-adapter.mjs`; it watches dynamically-rendered inputs and adds an inline optimize button.
 
 ## Roadmap
 
