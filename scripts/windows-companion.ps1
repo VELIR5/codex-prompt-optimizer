@@ -1,12 +1,38 @@
-param([switch]$Install, [switch]$Uninstall)
+param([switch]$Install, [switch]$Uninstall, [switch]$Configure)
 $ErrorActionPreference = 'Stop'
 $app = Split-Path -Parent $PSScriptRoot
 $startup = [Environment]::GetFolderPath('Startup')
-$launcher = Join-Path $startup 'PromptLens.cmd'
+$launcher = Join-Path $startup 'Prompt Lens.lnk'
+$configDir = Join-Path $env:APPDATA 'PromptLens'
+$configPath = Join-Path $configDir 'templates.json'
+function Initialize-Config {
+  if (Test-Path $configPath) {
+    try { Get-Content -LiteralPath $configPath -Raw | ConvertFrom-Json | Out-Null; return } catch { Remove-Item -LiteralPath $configPath -Force }
+  }
+  New-Item -ItemType Directory -Force -Path $configDir | Out-Null
+  @'
+{
+  "activeTemplate": "task",
+  "templates": {
+    "task": { "name": "Task", "instruction": "Clarify the goal, constraints, acceptance criteria, deliverables, and open questions." },
+    "coding": { "name": "Coding", "instruction": "Add relevant context, expected behavior, edge cases, test strategy, and implementation boundaries." },
+    "review": { "name": "Review", "instruction": "Prioritize correctness, regressions, security, and missing tests. Report findings by severity." },
+    "writing": { "name": "Writing", "instruction": "Preserve intent and facts while improving structure, clarity, tone, and audience fit." }
+  }
+}
+'@ | Set-Content -LiteralPath $configPath -Encoding UTF8
+}
+Initialize-Config
+if ($Configure) { Start-Process notepad.exe $configPath; exit 0 }
 if ($Uninstall) { if (Test-Path $launcher) { Remove-Item -LiteralPath $launcher -Force }; Write-Host 'Prompt Lens startup entry removed.'; exit 0 }
 if ($Install) {
-  $cmd = "powershell.exe -NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File `"$PSScriptRoot\windows-companion.ps1`""
-  Set-Content -LiteralPath $launcher -Value "@echo off`r`n$cmd" -Encoding ASCII
+  $shell = New-Object -ComObject WScript.Shell
+  $shortcut = $shell.CreateShortcut($launcher)
+  $shortcut.TargetPath = "$env:SystemRoot\System32\WindowsPowerShell\v1.0\powershell.exe"
+  $shortcut.Arguments = "-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File `"$PSScriptRoot\windows-companion.ps1`""
+  $shortcut.WorkingDirectory = $app
+  $shortcut.WindowStyle = 7
+  $shortcut.Save()
   Write-Host "Installed. Start Prompt Lens from: $launcher"
   exit 0
 }
@@ -34,7 +60,9 @@ function Set-Text($text, $restoreClipboard) { Set-Clipboard -Value $text; [Syste
 function Optimize($text) {
   $clean = ($text -replace '[ \t]+',' ').Trim()
   if (!$clean) { return $clean }
-  return "你是一名专业助手。明确目标、约束、验收标准、交付物和待确认问题。`r`n`r`n请给出可执行的结果，简要说明关键假设，控制范围，并只提出必要的澄清问题。`r`n`r`n用户需求：`r`n$clean"
+  try { $config = Get-Content -LiteralPath $configPath -Raw | ConvertFrom-Json; $template = $config.templates.($config.activeTemplate); $instruction = $template.instruction; if (!$instruction) { throw 'Active template has no instruction.' } }
+  catch { throw "Unable to read Prompt Lens templates at $configPath : $_" }
+  return "You are an expert assistant. $instruction`r`n`r`nReturn a practical answer, state assumptions briefly, keep scope bounded, and ask only essential clarifying questions.`r`n`r`nUser request:`r`n$clean"
 }
 $hotkeyOptimize = [PromptLensHotkeys]::RegisterHotKey([IntPtr]::Zero, 1, $MOD_CONTROL -bor $MOD_ALT, 0x4F)
 $hotkeyRestore = [PromptLensHotkeys]::RegisterHotKey([IntPtr]::Zero, 2, $MOD_CONTROL -bor $MOD_ALT, 0x5A)

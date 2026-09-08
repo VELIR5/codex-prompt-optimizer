@@ -28,6 +28,10 @@ Open `http://127.0.0.1:4173` in a browser, or mount `src/` as a local Codex pane
 
 This companion does not modify Codex files. Install Node.js 20+, run `npm install`, then run `npm run companion:install` in PowerShell. Focus the Codex composer and press `Ctrl+Alt+O` to select, optimize, and paste the prompt back. Press `Ctrl+Alt+Z` to restore the previous text. Hotkeys are guarded to the foreground process named `codex`; other apps are not changed. Stop auto-start with `npm run companion:uninstall`. Processing is local-only.
 
+### Custom templates
+
+Yes. Run `npm run companion:configure` to open `%APPDATA%\PromptLens\templates.json`. Set `activeTemplate` to a template key. Add any new template under `templates` with an `instruction`, set it active, then restart the companion. Built-in templates can also be edited.
+
 ### Troubleshooting
 
 - No response: make sure Codex is the foreground window and only one companion instance is running.

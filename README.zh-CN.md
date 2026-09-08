@@ -37,11 +37,15 @@ npm run dev
 
 优化完全在本机执行，不上传输入内容；快捷键只对前台进程名为 `codex` 的窗口生效，其他应用不会被修改。停止开机启动：`npm run companion:uninstall`。首次使用建议先按下面的故障排查检查状态，再切换到 Codex。
 
+### 自定义模板
+
+支持。运行 `npm run companion:configure` 会打开 `%APPDATA%\PromptLens\templates.json`。`activeTemplate` 决定当前使用的模板；在 `templates` 中新增任意名称与 `instruction` 后，将 `activeTemplate` 改为该名称，重启 companion 即可生效。四个内置模板可直接修改或删除。配置文件必须保存为 UTF-8；模板内容可使用中文。
+
 ### 故障排查
 
 - 没有反应：确认 Codex 是当前前台窗口，且没有重复运行两个 companion 实例。
 - 提示快捷键被占用：关闭占用 `Ctrl+Alt+O` 或 `Ctrl+Alt+Z` 的工具后重新启动 companion。
-- 需要立即停止：任务管理器中结束 `powershell.exe`，然后再次运行 `npm run companion:install` 不会重复创建启动项。
+- 需要立即停止：任务管理器中结束命令行包含 `windows-companion.ps1` 的 `powershell.exe`。
 - 卸载：运行 `npm run companion:uninstall`，再手动结束仍在运行的 companion 进程。
 
 ## 路线图
