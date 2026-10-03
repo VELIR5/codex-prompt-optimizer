@@ -5,16 +5,27 @@ export const TEMPLATES = {
   writing: { label: '写作润色', en: 'Writing polish', prompt: '保留原意与事实，同时改善结构、清晰度、语气和读者适配。', promptEn: 'Preserve intent and facts while improving structure, clarity, tone, and audience fit.' }
 };
 
-const trim = (value) => value.trim().replace(/[ \t]+/g, ' ');
+// Only normalize line endings and outer whitespace. Inner spacing is preserved so
+// code snippets keep their indentation (Python/YAML would break otherwise).
+const normalize = (value) => String(value).replace(/\r\n?/g, '\n').trim();
 
+/**
+ * Wrap a raw request in a structured prompt.
+ * @param {string} input Raw user request.
+ * @param {keyof TEMPLATES} [template] Built-in template key; unknown keys fall back to `task`.
+ * @param {{ language?: 'zh' | 'en', instruction?: string }} [options]
+ *   `instruction` overrides the template text (used by custom templates).
+ */
 export function optimizePrompt(input, template = 'task', options = {}) {
-  const source = trim(input ?? '');
+  const source = normalize(input ?? '');
   if (!source) return '';
-  const selected = TEMPLATES[template] ?? TEMPLATES.task;
+  const selected = Object.hasOwn(TEMPLATES, template) ? TEMPLATES[template] : TEMPLATES.task;
   const language = options.language === 'en' ? 'en' : 'zh';
+  const custom = typeof options.instruction === 'string' ? options.instruction.trim() : '';
+  const instruction = custom || (language === 'en' ? selected.promptEn ?? selected.prompt : selected.prompt);
   const prefix = language === 'en'
-    ? `You are an expert assistant. ${selected.promptEn ?? selected.prompt}`
-    : `你是一名专业助手。${selected.prompt}`;
+    ? `You are an expert assistant. ${instruction}`
+    : `你是一名专业助手。${instruction}`;
   const structure = language === 'en'
     ? '\n\nReturn a practical answer. State assumptions briefly, keep scope bounded, and ask only essential clarifying questions.\n\nUser request:\n'
     : '\n\n请给出可执行的结果，简要说明关键假设，控制范围，并只提出必要的澄清问题。\n\n用户需求：\n';
